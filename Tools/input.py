@@ -18,9 +18,9 @@ from pandas.io.json import json_normalize
 
 def fuck():
     n = 1
-    errorchunk = pd.read_csv('/home/leechh/data/R/train_v2.csv', nrows=300000, chunksize=10000)
+    errorchunk = pd.read_csv('/home/leechh/data/R/test_v2.csv', nrows=5000, chunksize=100)
     for subchunk in errorchunk:    
-        if n == 30:
+        if n == 41:
             df = subchunk.copy()
         n = n+1
     return df
@@ -40,7 +40,7 @@ def todict(dic, key, value):
     if key in dic:
         dic[key].append(value)
     else:
-        dic[key] = []
+        dic[key] = [value]
     return dic
 
 
@@ -68,13 +68,17 @@ def replacehits(x):
                                         replace('False','false'). \
                                         replace(', \"',', !&~'). \
                                         replace('\", ','!&~, '). \
-                                        replace('\":','!&~:'). \
+                                        replace('\": ','!&~: '). \
                                         replace(': \"',': !&~'). \
-                                        replace('{\"','{!&~'). \
-                                        replace('\"}','!&~}'). \
+                                        replace(' {\"',' {!&~'). \
+                                        replace('\"}, ','!&~}, '). \
+                                        replace('[{\"','[{!&~'). \
+                                        replace('\"}]','!&~}]'). \
                                         replace('\"','_'). \
                                         replace('!&~','\"'). \
-                                        replace('False','\"FALSE\"')))
+                                        encode('gbk','ignore'). \
+                                        decode('utf-8','ignore'). \
+                                        replace('\\','')))
 
 
 def replace(x):
@@ -111,8 +115,5 @@ def load_df(csv_path, nrows=None, chunksize=10_000, percent=100):
         del column_as_df, subchunk
     return pd.concat(df_list, ignore_index=True)
 
-if __name__ == '__main__':
-    train = load_df('/home/leechh/data/R/train_v2.csv',
-                    nrows=None, chunksize=1000)
-    train.to_feather('/home/leechh/tempfile/R/train_v2.feather')
-    
+#if __name__ == '__main__':
+#train = load_df('/home/leechh/data/R/train_v2.csv',nrows=100, chunksize=10)
